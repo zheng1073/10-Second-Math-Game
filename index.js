@@ -1,68 +1,120 @@
 $(document).ready(function(){
-  var currentQuestion;
-  var interval;
+  var totalTime = 10;
+  var secondsLeft = totalTime;
   var timeLeft = 10;
+  var timer;
+  var currentQuestion;
+  var NUMBER_LIMIT = 10;
   var score = 0;
-
-  var updateTimeLeft = function (amount) {
-    timeLeft += amount;
-    $('#time-left').text(timeLeft);
-  };
 
   var updateScore = function (amount) {
     score += amount;
     $('#score').text(score);
   };
 
-  var startGame = function () {
-    if (!interval) {
-      if (timeLeft === 0) {
-        updateTimeLeft(10);
-        updateScore(-score);
+  var getRandomInt = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  var rand = getRandomInt;
+
+  var chooseFormula = function() {
+    var formulaArray = [];
+
+    $('.option-box').each(function(){
+      if ($(this).prop('checked')){
+        var elementId = $(this).attr('id');
+        formulaArray.push(elementId);
       }
-      interval = setInterval(function () {
-        updateTimeLeft(-1);
-        if (timeLeft === 0) {
-          clearInterval(interval);
-          interval = undefined;
-        }
-      }, 1000);
+    });
+
+    var index = rand(0, formulaArray.length - 1);
+    return formulaArray[index];
+  }
+
+  var generateQuestion = function(){
+
+    var formula;
+    function generateQuestionText(a, b, operator){
+      return rand(a, b) + operator + rand(a, b)
+    };
+    function generateQuestionEval(a, b, operator){
+      return rand(a, b) + operator + rand(a, b)
+    };
+
+    switch(chooseFormula()){
+      case 'addition':
+        formula = function additionQuestion(a, b) {
+          var question = generateQuestionText(a, b, ' + ');
+          return {'information': question,
+                  'eval': question};
+        };
+        break;
+      case 'subtraction':
+        formula = function subtractionQuestion(a, b) {
+          var question = generateQuestionText(a, b, ' - ');
+          return {'information': question,
+                  'eval': question};
+        };
+        break;
+      case 'multiplication':
+        formula = function multiplicationQuestion(a, b) {
+          var question = generateQuestionText(a, b, ' x ');
+          return {'information': question,
+                  'eval': question.replace('x','*')};
+        };
+        break;
+        case 'division':
+        formula = function divisionQuestion(a, b) {
+          var question = generateQuestionText(a, b, ' / ');
+          return {'information': question,
+                  'eval': question};
+        };
+        break;
     }
+    return formula(1,NUMBER_LIMIT)
   };
 
-  var randomNumberGenerator = function (size) {
-    return Math.ceil(Math.random() * size);
-  };
-
-  var questionGenerator = function () {
-    var question = {};
-    var num1 = randomNumberGenerator(10);
-    var num2 = randomNumberGenerator(10);
-
-    question.answer = num1 + num2;
-    question.equation = String(num1) + " + " + String(num2);
-
+  var makeNewQuestion = function(){
+    var question = generateQuestion();
+    $('#question').text(question.information);
     return question;
   };
 
-  var renderNewQuestion = function () {
-    currentQuestion = questionGenerator();
-    $('#equation').text(currentQuestion.equation);
+  currentQuestion = makeNewQuestion();
+
+  var resetTimer = function(){
+    timer = setInterval(function(){
+      secondsLeft = Number(secondsLeft) - 1;
+      $('#clock').text(secondsLeft);
+      // Check if game is over
+      if (secondsLeft == 0){
+        clearInterval(timer);
+        secondsLeft = 10;
+        updateScore(-score);
+
+      }
+    }, 1000)
   };
 
-  var checkAnswer = function (userInput, answer) {
-    if (userInput === answer) {
-      renderNewQuestion();
-      $('#user-input').val('');
-      updateTimeLeft(+1);
+
+
+  var getNewTime = function(){
+    var oldTime = secondsLeft;
+    var newTime = oldTime + 1;
+    secondsLeft = newTime;
+  };
+
+
+  $('#answer').keyup(function(){
+    if ($('#answer').val() == eval(currentQuestion.eval)){
+      window.clearInterval(timer);
+      getNewTime();
+      $('#clock').text(secondsLeft);
+      currentQuestion = makeNewQuestion();
+      $('#answer').val('');
       updateScore(+1);
+      resetTimer();
     }
-  };
+  })
 
-  $('#user-input').on('keyup', function () {
-    startGame();
-    checkAnswer(Number($(this).val()), currentQuestion.answer);
-  });
-
-  renderNewQuestion();
 });

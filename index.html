@@ -12,15 +12,16 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-xs-12">
-          <h2>10 Sec Maths Game</h2>
-          <h3 id="time-left">10</h3>
-          <p>second left</p>
-          <h1 id="equation"></h1>
-          <input id="user-input" type="number" />
-          <h4>Score: <span id="score"></span></h4>
+        <h1><span id="clock">10</span> seconds left</h1>
+        <div style="font-size: 50px;"><span id="question"></span> </div>
+        <h1><input id="answer" placeholder="answer"></h1>
+        <div>Options</div>
+          <input type="checkbox" class="option-box" id="addition" checked="true">+
+          <input type="checkbox" class="option-box" id="subtraction">-
+          <input type="checkbox" class="option-box" id="multiplication">x
+          <input type="checkbox" class="option-box" id="division">/
         </div>
-      </div>
+        <h4>Score: <span id="score"></span></h4>
     </div>
   </body>
 </html>
