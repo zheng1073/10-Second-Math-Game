@@ -51,9 +51,12 @@ $(document).ready(function(){
         break;
       case 'subtraction':
         formula = function subtractionQuestion(a, b) {
-          var question = generateQuestionText(a, b, ' - ');
-          return {'information': question,
-                  'eval': question};
+          var dividend = 1 + rand(Math.sqrt(a), Math.sqrt(b));
+          var denominator = 1 + rand(Math.sqrt(a), Math.sqrt(b));
+
+          var multiple = dividend * denominator;
+          return {'information': multiple + ' - ' + denominator,
+                  'eval': multiple + '-' + denominator};
         };
         break;
       case 'multiplication':
@@ -65,9 +68,12 @@ $(document).ready(function(){
         break;
         case 'division':
         formula = function divisionQuestion(a, b) {
-          var question = generateQuestionText(a, b, ' / ');
-          return {'information': question,
-                  'eval': question};
+          var dividend = 1 + rand(Math.sqrt(a), Math.sqrt(b));
+          var denominator = 1 + rand(Math.sqrt(a), Math.sqrt(b));
+
+          var multiple = dividend * denominator;
+          return {'information': multiple + ' / ' + denominator,
+                  'eval': multiple + '/' + denominator};
         };
         break;
     }
